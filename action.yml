@@ -1,0 +1,39 @@
+name: 'release-jira-ticket-actions'
+description: 'Create or Update a Jira release and add tickets to it.'
+author: 'Vicente Albert'
+inputs:
+  email:
+    required: true
+    description: Email address associated with api token
+  api_token:
+    required: true
+    description: Jira API token
+  subdomain:
+    required: true
+    description: '{subdomain}.atlassian.net'
+  jira_project:
+    required: true
+    description: 'Id of the JIRA project'
+  release_name:
+    required: true
+    description: Name of the release
+  create:
+    required: false
+    description: Automatically create the release if not present in Jira
+    default: 'false'
+  tickets:
+    required: false
+    description: Comma separated list of ticket IDs to include in the release. Update the first release-version.
+    default: ''
+  dry_run:
+    description: Dump the config
+    required: false
+    default: 'false'
+
+branding:
+  icon: 'package'
+  color: 'blue'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
