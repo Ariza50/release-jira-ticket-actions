@@ -101,3 +101,5 @@ lib/**/*
 token.json
 
 .idea
+
+/.github/workflows/test.yml

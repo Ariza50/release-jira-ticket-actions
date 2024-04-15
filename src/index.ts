@@ -6,7 +6,9 @@ import {
   SUBDOMAIN,
   RELEASE_NAME,
   PROJECT,
-  DRY_RUN, GH_USER, GH_REPOSITORY
+  DRY_RUN,
+  GH_USER,
+  GH_REPOSITORY
 } from './env'
 import {Project} from './jira.api'
 import {Version} from './models'
