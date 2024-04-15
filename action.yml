@@ -1,4 +1,4 @@
-name: 'release-jira-ticket-actions'
+name: 'jira-ticket-actions'
 description: 'Create or Update a Jira release and add tickets to it.'
 author: 'Vicente Albert'
 inputs:

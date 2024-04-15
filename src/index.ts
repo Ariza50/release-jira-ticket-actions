@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+
 import {
   EMAIL,
   API_TOKEN,
@@ -11,6 +12,7 @@ import {
 } from './env'
 import {Project} from './api'
 import {Version} from './models'
+import {getPRInfo} from './github.api'
 
 async function run(): Promise<void> {
   try {
@@ -35,6 +37,8 @@ async function run(): Promise<void> {
       core.info(`Project loaded ${project.project?.id}`)
       const version = project.getVersion(RELEASE_NAME)
 
+      await getPRInfo();
+
       if (version === undefined) {
         core.info(`Version ${RELEASE_NAME} not found`)
       } else {
@@ -56,7 +60,7 @@ async function run(): Promise<void> {
         const versionToCreate: Version = {
           name: RELEASE_NAME,
           archived: false,
-          released: true,
+          released: false,
           releaseDate: new Date().toISOString(),
           projectId: Number(project.project?.id)
         }
