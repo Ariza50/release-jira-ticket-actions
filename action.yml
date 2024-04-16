@@ -1,5 +1,5 @@
 name: 'jira-ticket-actions'
-description: 'Create or Update a Jira release and add tickets to it.'
+description: 'Create or Update a Jira release and modify version on related tickets.'
 author: 'Vicente Albert'
 inputs:
   email:
@@ -17,14 +17,15 @@ inputs:
   release_name:
     required: true
     description: Name of the release
-  create:
-    required: false
-    description: Automatically create the release if not present in Jira
-    default: 'false'
-  tickets:
-    required: false
-    description: Comma separated list of ticket IDs to include in the release. Update the first release-version.
-    default: ''
+  gh_user:
+    required: true
+    description: Github user
+  gh_token:
+    required: true
+    description: Github token
+  gh_repository:
+    required: true
+    description: Github repository
   dry_run:
     description: Dump the config
     required: false

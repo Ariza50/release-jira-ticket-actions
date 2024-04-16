@@ -1,62 +1,27 @@
-import * as core from '@actions/core'
-import * as github from "@actions/github";
-import {TICKETS} from './env'
-import {context, getOctokit} from '@actions/github'
+import {getOctokit} from '@actions/github'
+import {
+  GH_REPOSITORY,
+  GH_USER,
+  GH_TOKEN,
+} from './env'
 
-export const getPRInfo = async () => {
+export const getTicketsFromCommits = async () => {
 
-  /*const payload = github.context.payload
-  const repository = payload.repository
-  if (repository == null) {
-    core.setFailed("github.context.payload.repository is null")
-    return
-  }*/
+  const github = getOctokit(GH_TOKEN)
+  const tags = await github.rest.repos.listTags({owner: GH_USER, repo: GH_REPOSITORY})
+  const uniqueTickets = new Set<string>()
 
-  const github = getOctokit('')
+  await github.rest.repos.compareCommits({owner: GH_USER, repo: GH_REPOSITORY, base: tags.data[1].commit.sha, head: tags.data[0].commit.sha}).then(compare => {
+    const JIRA_REGEX = /(?<!([A-Z]{1,10})-?)[A-Z]+-\d+/
 
-  //  this is only for test
-  const newTag = '1.9.2'
+    compare.data.commits.forEach((commit) => {
+      const matches = commit.commit.message.match(JIRA_REGEX)
 
-
-  const rest = await github.rest.repos.listTags({owner: 'ariza50', repo: 'admin-ci'})
-  rest.data.forEach(tag => {
-    core.info(`tag ${tag.name}`)
-  })
-
-  await github.rest.repos.listCommits({owner: 'ariza50', repo: 'admin-ci', sha: rest.data[0].commit.sha}).then(commits => {
-    commits.data.forEach(commit => {
-      core.info(`commit ${commit.sha}`)
+      matches?.forEach((match) => {
+        if (match !== undefined) uniqueTickets.add(match)
+      })
     })
   })
-  console.log('-> rest.data[0]', rest.data[0])
 
-  /*const release = await github.rest.repos.createRelease({
-    owner: 'ariza50',
-    repo: 'admin-ci',
-    tag_name: newTag,
-    name: `v${newTag}`,
-    generate_release_notes: true,
-    draft: false,
-    prerelease: false,
-    make_latest: 'true'
-  })
-
-  core.info(`release ${release.data.tag_name}`)
-  core.info(`release ${release.data.name}`)
-  core.info(`release ${release.data.body}`)*/
-
-}
-
-function getJiraVersionName(branchName: string, jiraVersionPrefix?: string): string | null {
-  const regex = new RegExp(`/(\\d+\\.\\d+\\.\\d+)`, "g")
-  const matches: string[] | null = regex.exec(branchName)
-  if (matches == null) {
-    return null
-  }
-  const versionName = matches[1]
-  if (jiraVersionPrefix != null) {
-    return `${jiraVersionPrefix} ${versionName}`
-  } else {
-    return versionName
-  }
+  return uniqueTickets;
 }
