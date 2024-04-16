@@ -5,11 +5,12 @@ export const API_TOKEN: string = core.getInput('api_token', {required: true})
 export const SUBDOMAIN: string = core.getInput('subdomain', {required: true})
 
 export const RELEASE_NAME: string = core.getInput('release_name', {
-  required: true
-})
-export const PROJECT: string = core.getInput('jira_project', {required: true})
-export const CREATE: string = core.getInput('create', {
   required: false
 })
-export const TICKETS: string = core.getInput('tickets', {required: false})
+export const PROJECT: string = core.getInput('jira_project', {required: true})
+
+export const GH_USER: string = core.getInput('gh_user', {required: true})
+export const GH_TOKEN: string = core.getInput('gh_token', {required: true})
+export const GH_REPOSITORY: string = core.getInput('gh_repository', {required: true})
+
 export const DRY_RUN: string = core.getInput('dry_run', {required: false})

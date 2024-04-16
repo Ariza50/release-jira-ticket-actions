@@ -64,7 +64,7 @@ export class Project {
           update: {
             fixVersions: [
               {
-                add: {id: version}
+                add: {name: version}
               }
             ]
           }
