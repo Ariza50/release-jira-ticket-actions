@@ -17,7 +17,7 @@ jobs:
           npm run build
       - uses: ./
         with:
-          dry_run: false
+          dry_run: ci
           email: test@email.com
           api_token: myjiraapitoken
           subdomain: jirasubdomain

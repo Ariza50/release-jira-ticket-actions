@@ -14,6 +14,17 @@ import {getTicketsFromCommits} from './github.api'
 
 async function run(): Promise<void> {
   try {
+    if (DRY_RUN === 'ci') {
+      core.info(`email ${EMAIL}`)
+      core.info(`project ${PROJECT}`)
+      core.info(`subdomain ${SUBDOMAIN}`)
+      core.info(`releaseName ${RELEASE_NAME}`)
+      core.info(`GH User ${GH_USER}`)
+      core.info(`Repository ${GH_REPOSITORY}`)
+
+      return
+    }
+
     if (DRY_RUN === 'true') {
       core.info(`email ${EMAIL}`)
       core.info(`project ${PROJECT}`)
