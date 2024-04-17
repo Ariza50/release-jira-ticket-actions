@@ -12,7 +12,7 @@ export const getTicketsFromCommits = async () => {
   const uniqueTickets = new Set<string>()
 
   await github.rest.repos.compareCommits({owner: GH_USER, repo: GH_REPOSITORY, base: tags.data[1].commit.sha, head: tags.data[0].commit.sha}).then(compare => {
-    const JIRA_REGEX = /(?<!([A-Z]{1,10})-?)[A-Z]+-\d+/
+    const JIRA_REGEX = /(?<!([A-Za-z][0-9]))[A-Za-z]+-\d+/
 
     compare.data.commits.forEach((commit) => {
       const matches = commit.commit.message.match(JIRA_REGEX)
