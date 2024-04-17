@@ -38,12 +38,12 @@ async function run(): Promise<void> {
       core.info(`Project loaded ${project.project?.id}`)
       const version = project.getVersion(RELEASE_NAME)
 
-      // const tickets = await getTicketsFromCommits();
+      const tickets = await getTicketsFromCommits();
 
-     /* core.info(`Final tickets ${tickets.size}`)
+      core.info(`Final tickets ${tickets.size}`)
       tickets.forEach(ticket => {
         core.info(`Ticket ${ticket}`)
-      });*/
+      });
 
       // await project.updateIssue('DB-2', '2.0.2')
 
