@@ -26,6 +26,15 @@ inputs:
   gh_repository:
     required: true
     description: Github repository
+  slack_token:
+    required: false
+    description: Slack oauth token
+  slack_channel:
+    required: false
+    description: Slack channelId
+  slack_environment:
+    required: false
+    description: Environment to post slack message
   dry_run:
     description: Dump the config
     required: false

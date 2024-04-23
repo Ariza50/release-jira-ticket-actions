@@ -8,11 +8,12 @@ import {
   PROJECT,
   DRY_RUN,
   GH_USER,
-  GH_REPOSITORY
+  GH_REPOSITORY, SLACK_TOKEN, SLACK_CHANNEL
 } from './env'
 import {Project} from './jira.api'
 import {Version} from './models'
 import {getTicketsFromCommits} from './github.api'
+import {sendNewReleaseMessage} from './slack.api'
 
 async function run(): Promise<void> {
   try {
@@ -38,14 +39,17 @@ async function run(): Promise<void> {
       core.info(`Project loaded ${project.project?.id}`)
       const version = project.getVersion(RELEASE_NAME)
 
-      const tickets = await getTicketsFromCommits();
+      /*const tickets = await getTicketsFromCommits();
 
       core.info(`Final tickets ${tickets.size}`)
       tickets.forEach(ticket => {
         core.info(`Ticket ${ticket}`)
-      });
+      });*/
 
-      // await project.updateIssue('DB-2', '2.0.2')
+      if (SLACK_TOKEN && SLACK_CHANNEL) {
+        core.debug(`Sending slack message`)
+        await sendNewReleaseMessage(RELEASE_NAME)
+      }
 
       if (version === undefined) {
         core.info(`Version ${RELEASE_NAME} not found`)
@@ -92,6 +96,11 @@ async function run(): Promise<void> {
         core.debug(`Going to update ticket ${ticket} with version ${version?.name}`)
         if (version?.id !== undefined) project.updateIssue(ticket, RELEASE_NAME)
       })
+    }
+
+    if (SLACK_TOKEN && SLACK_CHANNEL) {
+      core.debug(`Sending slack message`)
+      await sendNewReleaseMessage(RELEASE_NAME)
     }
   } catch (error: Error | unknown) {
     const e: Error = error as Error
