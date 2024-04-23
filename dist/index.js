@@ -136,12 +136,11 @@ async function run() {
             const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
             core.info(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
             const version = project.getVersion(env_1.RELEASE_NAME);
-            /*const tickets = await getTicketsFromCommits();
-      
-            core.info(`Final tickets ${tickets.size}`)
+            const tickets = await (0, github_api_1.getTicketsFromCommits)();
+            core.info(`Final tickets ${tickets.size}`);
             tickets.forEach(ticket => {
-              core.info(`Ticket ${ticket}`)
-            });*/
+                core.info(`Ticket ${ticket}`);
+            });
             if (env_1.SLACK_TOKEN && env_1.SLACK_CHANNEL) {
                 core.debug(`Sending slack message`);
                 await (0, slack_api_1.sendNewReleaseMessage)(env_1.RELEASE_NAME);
