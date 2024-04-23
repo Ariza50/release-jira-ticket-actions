@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DRY_RUN = exports.GH_REPOSITORY = exports.GH_TOKEN = exports.GH_USER = exports.PROJECT = exports.RELEASE_NAME = exports.SUBDOMAIN = exports.API_TOKEN = exports.EMAIL = void 0;
+exports.DRY_RUN = exports.SLACK_ENVIRONMENT = exports.SLACK_CHANNEL = exports.SLACK_TOKEN = exports.GH_REPOSITORY = exports.GH_TOKEN = exports.GH_USER = exports.PROJECT = exports.RELEASE_NAME = exports.SUBDOMAIN = exports.API_TOKEN = exports.EMAIL = void 0;
 const core = __importStar(require("@actions/core"));
 exports.EMAIL = core.getInput('email', { required: true });
 exports.API_TOKEN = core.getInput('api_token', { required: true });
@@ -35,4 +35,7 @@ exports.PROJECT = core.getInput('jira_project', { required: true });
 exports.GH_USER = core.getInput('gh_user', { required: true });
 exports.GH_TOKEN = core.getInput('gh_token', { required: true });
 exports.GH_REPOSITORY = core.getInput('gh_repository', { required: true });
+exports.SLACK_TOKEN = core.getInput('slack_token', { required: false });
+exports.SLACK_CHANNEL = core.getInput('slack_channel', { required: false });
+exports.SLACK_ENVIRONMENT = core.getInput('slack_environment', { required: false });
 exports.DRY_RUN = core.getInput('dry_run', { required: false });
