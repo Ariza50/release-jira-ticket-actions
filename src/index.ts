@@ -39,12 +39,12 @@ async function run(): Promise<void> {
       core.info(`Project loaded ${project.project?.id}`)
       const version = project.getVersion(RELEASE_NAME)
 
-      /*const tickets = await getTicketsFromCommits();
+      const tickets = await getTicketsFromCommits();
 
       core.info(`Final tickets ${tickets.size}`)
       tickets.forEach(ticket => {
         core.info(`Ticket ${ticket}`)
-      });*/
+      });
 
       if (SLACK_TOKEN && SLACK_CHANNEL) {
         core.debug(`Sending slack message`)
