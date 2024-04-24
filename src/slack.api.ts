@@ -1,5 +1,5 @@
 import {WebClient} from '@slack/web-api';
-import {GH_REPOSITORY, SLACK_CHANNEL, SLACK_ENVIRONMENT, SLACK_TOKEN} from './env'
+import {GH_REPOSITORY, RELEASE_PREFIX, SLACK_CHANNEL, SLACK_ENVIRONMENT, SLACK_TOKEN} from './env'
 
 export const sendNewReleaseMessage = async (version: string) => {
   try {
@@ -27,7 +27,7 @@ const buildSlackVersionMessage = (version: string, environment: string) => {
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": `*${GH_REPOSITORY} | Release* version \`${version}\` has been released to \`${environment}\``
+      "text": `*${RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
     }
   })
 

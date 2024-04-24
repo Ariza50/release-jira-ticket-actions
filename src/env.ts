@@ -8,7 +8,7 @@ export const RELEASE_NAME: string = core.getInput('release_name', {
   required: true
 })
 export const RELEASE_PREFIX: string = core.getInput('release_prefix', {
-  required: false
+  required: true
 })
 export const PROJECT: string = core.getInput('jira_project', {required: true})
 
