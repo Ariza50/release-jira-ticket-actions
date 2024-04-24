@@ -71,9 +71,10 @@ export class Project {
         },
         this._authHeaders()
       )
+      core.info(`Updated ticket ${ticket} with version ${version}`)
       return response?.data
     } catch (error: unknown) {
-      return Promise.reject(toMoreDescriptiveError(error))
+      core.info(`Error: ${ticket} didn't exist`)
     }
   }
 

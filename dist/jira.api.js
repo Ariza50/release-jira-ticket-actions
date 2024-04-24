@@ -82,10 +82,11 @@ class Project {
                     ]
                 }
             }, this._authHeaders());
+            core.info(`Updated ticket ${ticket} with version ${version}`);
             return response === null || response === void 0 ? void 0 : response.data;
         }
         catch (error) {
-            return Promise.reject(toMoreDescriptiveError(error));
+            core.info(`Error: ${ticket} didn't exist`);
         }
     }
     static async create(email, token, name, domain) {

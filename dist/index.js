@@ -117,48 +117,43 @@ const env_1 = __nccwpck_require__(761);
 const jira_api_1 = __nccwpck_require__(7665);
 const github_api_1 = __nccwpck_require__(6986);
 const slack_api_1 = __nccwpck_require__(3713);
+async function testConnections() {
+    var _a;
+    core.info(`email ${env_1.EMAIL}`);
+    core.info(`project ${env_1.PROJECT}`);
+    core.info(`subdomain ${env_1.SUBDOMAIN}`);
+    core.info(`releaseName ${env_1.RELEASE_NAME}`);
+    core.info(`GH User ${env_1.GH_USER}`);
+    core.info(`Repository ${env_1.GH_REPOSITORY}`);
+    const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
+    core.info(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
+    const version = project.getVersion(env_1.RELEASE_NAME);
+    const tickets = await (0, github_api_1.getTicketsFromCommits)();
+    core.info(`Final tickets ${tickets.size}`);
+    tickets.forEach(ticket => {
+        core.info(`Ticket ${ticket}`);
+    });
+    if (env_1.SLACK_TOKEN && env_1.SLACK_CHANNEL) {
+        core.debug(`Sending slack message`);
+        await (0, slack_api_1.sendNewReleaseMessage)(env_1.RELEASE_NAME);
+    }
+    if (version === undefined) {
+        core.info(`Version ${env_1.RELEASE_NAME} not found`);
+    }
+    else {
+        core.info(`Version ${env_1.RELEASE_NAME} found`);
+    }
+}
 async function run() {
-    var _a, _b, _c;
+    var _a, _b;
     try {
-        if (env_1.DRY_RUN === 'ci') {
-            core.info(`email ${env_1.EMAIL}`);
-            core.info(`project ${env_1.PROJECT}`);
-            core.info(`subdomain ${env_1.SUBDOMAIN}`);
-            core.info(`releaseName ${env_1.RELEASE_NAME}`);
-            core.info(`GH User ${env_1.GH_USER}`);
-            core.info(`Repository ${env_1.GH_REPOSITORY}`);
-            return;
-        }
         if (env_1.DRY_RUN === 'true') {
-            core.info(`email ${env_1.EMAIL}`);
-            core.info(`project ${env_1.PROJECT}`);
-            core.info(`subdomain ${env_1.SUBDOMAIN}`);
-            core.info(`releaseName ${env_1.RELEASE_NAME}`);
-            core.info(`GH User ${env_1.GH_USER}`);
-            core.info(`Repository ${env_1.GH_REPOSITORY}`);
-            const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
-            core.info(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
-            const version = project.getVersion(env_1.RELEASE_NAME);
-            const tickets = await (0, github_api_1.getTicketsFromCommits)();
-            core.info(`Final tickets ${tickets.size}`);
-            tickets.forEach(ticket => {
-                core.info(`Ticket ${ticket}`);
-            });
-            if (env_1.SLACK_TOKEN && env_1.SLACK_CHANNEL) {
-                core.debug(`Sending slack message`);
-                await (0, slack_api_1.sendNewReleaseMessage)(env_1.RELEASE_NAME);
-            }
-            if (version === undefined) {
-                core.info(`Version ${env_1.RELEASE_NAME} not found`);
-            }
-            else {
-                core.info(`Version ${env_1.RELEASE_NAME} found`);
-            }
+            await testConnections();
             return;
         }
         const tickets = await (0, github_api_1.getTicketsFromCommits)();
         const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
-        core.debug(`Project loaded ${(_b = project.project) === null || _b === void 0 ? void 0 : _b.id}`);
+        core.debug(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
         const versionName = `${env_1.RELEASE_PREFIX} - ${env_1.RELEASE_NAME}`;
         let version = project.getVersion(versionName);
         if (version === undefined) {
@@ -169,7 +164,7 @@ async function run() {
                 archived: false,
                 released: false,
                 releaseDate: new Date().toISOString(),
-                projectId: Number((_c = project.project) === null || _c === void 0 ? void 0 : _c.id)
+                projectId: Number((_b = project.project) === null || _b === void 0 ? void 0 : _b.id)
             };
             version = await project.createVersion(versionToCreate);
             core.debug(versionToCreate.name);
@@ -295,10 +290,11 @@ class Project {
                     ]
                 }
             }, this._authHeaders());
+            core.info(`Updated ticket ${ticket} with version ${version}`);
             return response === null || response === void 0 ? void 0 : response.data;
         }
         catch (error) {
-            return Promise.reject(toMoreDescriptiveError(error));
+            core.info(`Error: ${ticket} didn't exist`);
         }
     }
     static async create(email, token, name, domain) {
