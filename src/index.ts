@@ -8,7 +8,7 @@ import {
   PROJECT,
   DRY_RUN,
   GH_USER,
-  GH_REPOSITORY, SLACK_TOKEN, SLACK_CHANNEL
+  GH_REPOSITORY, SLACK_TOKEN, SLACK_CHANNEL, RELEASE_PREFIX
 } from './env'
 import {Project} from './jira.api'
 import {Version} from './models'
@@ -71,7 +71,7 @@ async function run(): Promise<void> {
       core.debug(`Version ${RELEASE_NAME} not found`)
       core.debug(`Version ${RELEASE_NAME} is going to the created`)
       const versionToCreate: Version = {
-        name: RELEASE_NAME,
+        name: `${RELEASE_PREFIX} - ${RELEASE_NAME}`,
         archived: false,
         released: false,
         releaseDate: new Date().toISOString(),
