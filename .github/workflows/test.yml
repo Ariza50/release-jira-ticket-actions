@@ -26,3 +26,4 @@ jobs:
           gh_repository: githubrepo
           jira_project: 10000
           release_name: 1.0.3
+          release_prefix: prefix
