@@ -15,47 +15,40 @@ import {Version} from './models'
 import {getTicketsFromCommits} from './github.api'
 import {sendNewReleaseMessage} from './slack.api'
 
+async function testConnections() {
+  core.info(`email ${EMAIL}`)
+  core.info(`project ${PROJECT}`)
+  core.info(`subdomain ${SUBDOMAIN}`)
+  core.info(`releaseName ${RELEASE_NAME}`)
+  core.info(`GH User ${GH_USER}`)
+  core.info(`Repository ${GH_REPOSITORY}`)
+  const project = await Project.create(EMAIL, API_TOKEN, PROJECT, SUBDOMAIN)
+  core.info(`Project loaded ${project.project?.id}`)
+  const version = project.getVersion(RELEASE_NAME)
+
+  const tickets = await getTicketsFromCommits()
+
+  core.info(`Final tickets ${tickets.size}`)
+  tickets.forEach(ticket => {
+    core.info(`Ticket ${ticket}`)
+  })
+
+  if (SLACK_TOKEN && SLACK_CHANNEL) {
+    core.debug(`Sending slack message`)
+    await sendNewReleaseMessage(RELEASE_NAME)
+  }
+
+  if (version === undefined) {
+    core.info(`Version ${RELEASE_NAME} not found`)
+  } else {
+    core.info(`Version ${RELEASE_NAME} found`)
+  }
+}
+
 async function run(): Promise<void> {
   try {
-    if (DRY_RUN === 'ci') {
-      core.info(`email ${EMAIL}`)
-      core.info(`project ${PROJECT}`)
-      core.info(`subdomain ${SUBDOMAIN}`)
-      core.info(`releaseName ${RELEASE_NAME}`)
-      core.info(`GH User ${GH_USER}`)
-      core.info(`Repository ${GH_REPOSITORY}`)
-
-      return
-    }
-
     if (DRY_RUN === 'true') {
-      core.info(`email ${EMAIL}`)
-      core.info(`project ${PROJECT}`)
-      core.info(`subdomain ${SUBDOMAIN}`)
-      core.info(`releaseName ${RELEASE_NAME}`)
-      core.info(`GH User ${GH_USER}`)
-      core.info(`Repository ${GH_REPOSITORY}`)
-      const project = await Project.create(EMAIL, API_TOKEN, PROJECT, SUBDOMAIN)
-      core.info(`Project loaded ${project.project?.id}`)
-      const version = project.getVersion(RELEASE_NAME)
-
-      const tickets = await getTicketsFromCommits();
-
-      core.info(`Final tickets ${tickets.size}`)
-      tickets.forEach(ticket => {
-        core.info(`Ticket ${ticket}`)
-      });
-
-      if (SLACK_TOKEN && SLACK_CHANNEL) {
-        core.debug(`Sending slack message`)
-        await sendNewReleaseMessage(RELEASE_NAME)
-      }
-
-      if (version === undefined) {
-        core.info(`Version ${RELEASE_NAME} not found`)
-      } else {
-        core.info(`Version ${RELEASE_NAME} found`)
-      }
+      await testConnections();
       return;
     }
 
@@ -67,6 +60,7 @@ async function run(): Promise<void> {
 
     const versionName = `${RELEASE_PREFIX} - ${RELEASE_NAME}`
     let version = project.getVersion(versionName)
+
     if (version === undefined) {
       core.debug(`Version ${versionName} not found`)
       core.debug(`Version ${versionName} is going to the created`)
