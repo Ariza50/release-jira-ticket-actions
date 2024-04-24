@@ -5,6 +5,9 @@ export const API_TOKEN: string = core.getInput('api_token', {required: true})
 export const SUBDOMAIN: string = core.getInput('subdomain', {required: true})
 
 export const RELEASE_NAME: string = core.getInput('release_name', {
+  required: true
+})
+export const RELEASE_PREFIX: string = core.getInput('release_prefix', {
   required: false
 })
 export const PROJECT: string = core.getInput('jira_project', {required: true})

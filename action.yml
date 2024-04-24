@@ -17,6 +17,9 @@ inputs:
   release_name:
     required: true
     description: Name of the release
+  release_prefix:
+    required: false
+    description: Prefix for release
   gh_user:
     required: true
     description: Github user

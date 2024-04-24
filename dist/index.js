@@ -30,12 +30,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DRY_RUN = exports.SLACK_ENVIRONMENT = exports.SLACK_CHANNEL = exports.SLACK_TOKEN = exports.GH_REPOSITORY = exports.GH_TOKEN = exports.GH_USER = exports.PROJECT = exports.RELEASE_NAME = exports.SUBDOMAIN = exports.API_TOKEN = exports.EMAIL = void 0;
+exports.DRY_RUN = exports.SLACK_ENVIRONMENT = exports.SLACK_CHANNEL = exports.SLACK_TOKEN = exports.GH_REPOSITORY = exports.GH_TOKEN = exports.GH_USER = exports.PROJECT = exports.RELEASE_PREFIX = exports.RELEASE_NAME = exports.SUBDOMAIN = exports.API_TOKEN = exports.EMAIL = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 exports.EMAIL = core.getInput('email', { required: true });
 exports.API_TOKEN = core.getInput('api_token', { required: true });
 exports.SUBDOMAIN = core.getInput('subdomain', { required: true });
 exports.RELEASE_NAME = core.getInput('release_name', {
+    required: true
+});
+exports.RELEASE_PREFIX = core.getInput('release_prefix', {
     required: false
 });
 exports.PROJECT = core.getInput('jira_project', { required: true });
@@ -161,7 +164,7 @@ async function run() {
             core.debug(`Version ${env_1.RELEASE_NAME} not found`);
             core.debug(`Version ${env_1.RELEASE_NAME} is going to the created`);
             const versionToCreate = {
-                name: env_1.RELEASE_NAME,
+                name: `${env_1.RELEASE_PREFIX} - ${env_1.RELEASE_NAME}`,
                 archived: false,
                 released: false,
                 releaseDate: new Date().toISOString(),
