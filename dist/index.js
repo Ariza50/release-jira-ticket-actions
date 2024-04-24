@@ -39,7 +39,7 @@ exports.RELEASE_NAME = core.getInput('release_name', {
     required: true
 });
 exports.RELEASE_PREFIX = core.getInput('release_prefix', {
-    required: false
+    required: true
 });
 exports.PROJECT = core.getInput('jira_project', { required: true });
 exports.GH_USER = core.getInput('gh_user', { required: true });
@@ -159,12 +159,13 @@ async function run() {
         const tickets = await (0, github_api_1.getTicketsFromCommits)();
         const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
         core.debug(`Project loaded ${(_b = project.project) === null || _b === void 0 ? void 0 : _b.id}`);
-        let version = project.getVersion(env_1.RELEASE_NAME);
+        const versionName = `${env_1.RELEASE_PREFIX} - ${env_1.RELEASE_NAME}`;
+        let version = project.getVersion(versionName);
         if (version === undefined) {
-            core.debug(`Version ${env_1.RELEASE_NAME} not found`);
-            core.debug(`Version ${env_1.RELEASE_NAME} is going to the created`);
+            core.debug(`Version ${versionName} not found`);
+            core.debug(`Version ${versionName} is going to the created`);
             const versionToCreate = {
-                name: `${env_1.RELEASE_PREFIX} - ${env_1.RELEASE_NAME}`,
+                name: versionName,
                 archived: false,
                 released: false,
                 releaseDate: new Date().toISOString(),
@@ -174,7 +175,7 @@ async function run() {
             core.debug(versionToCreate.name);
         }
         else {
-            core.debug(`Version ${env_1.RELEASE_NAME} found and is going to be updated`);
+            core.debug(`Version ${versionName} found and is going to be updated`);
             const versionToUpdate = {
                 ...version,
                 self: undefined,
@@ -186,9 +187,9 @@ async function run() {
         }
         if (tickets.size > 0) {
             tickets.forEach(ticket => {
-                core.debug(`Going to update ticket ${ticket} with version ${version === null || version === void 0 ? void 0 : version.name}`);
+                core.debug(`Going to update ticket ${ticket} with version ${versionName}`);
                 if ((version === null || version === void 0 ? void 0 : version.id) !== undefined)
-                    project.updateIssue(ticket, env_1.RELEASE_NAME);
+                    project.updateIssue(ticket, versionName);
             });
         }
         if (env_1.SLACK_TOKEN && env_1.SLACK_CHANNEL) {
@@ -379,7 +380,7 @@ const buildSlackVersionMessage = (version, environment) => {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": `*${env_1.GH_REPOSITORY} | Release* version \`${version}\` has been released to \`${environment}\``
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
         }
     });
     blocks.push(buildDivider());
