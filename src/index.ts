@@ -65,13 +65,13 @@ async function run(): Promise<void> {
 
     core.debug(`Project loaded ${project.project?.id}`)
 
-    let version = project.getVersion(RELEASE_NAME)
-
+    const versionName = `${RELEASE_PREFIX} - ${RELEASE_NAME}`
+    let version = project.getVersion(versionName)
     if (version === undefined) {
-      core.debug(`Version ${RELEASE_NAME} not found`)
-      core.debug(`Version ${RELEASE_NAME} is going to the created`)
+      core.debug(`Version ${versionName} not found`)
+      core.debug(`Version ${versionName} is going to the created`)
       const versionToCreate: Version = {
-        name: `${RELEASE_PREFIX} - ${RELEASE_NAME}`,
+        name: versionName,
         archived: false,
         released: false,
         releaseDate: new Date().toISOString(),
@@ -80,7 +80,7 @@ async function run(): Promise<void> {
       version = await project.createVersion(versionToCreate)
       core.debug(versionToCreate.name)
     } else {
-      core.debug(`Version ${RELEASE_NAME} found and is going to be updated`)
+      core.debug(`Version ${versionName} found and is going to be updated`)
       const versionToUpdate: Version = {
         ...version,
         self: undefined,
@@ -93,8 +93,8 @@ async function run(): Promise<void> {
 
     if (tickets.size > 0) {
       tickets.forEach(ticket => {
-        core.debug(`Going to update ticket ${ticket} with version ${version?.name}`)
-        if (version?.id !== undefined) project.updateIssue(ticket, RELEASE_NAME)
+        core.debug(`Going to update ticket ${ticket} with version ${versionName}`)
+        if (version?.id !== undefined) project.updateIssue(ticket, versionName)
       })
     }
 

@@ -26,7 +26,7 @@ const buildSlackVersionMessage = (version, environment) => {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": `*${env_1.GH_REPOSITORY} | Release* version \`${version}\` has been released to \`${environment}\``
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
         }
     });
     blocks.push(buildDivider());

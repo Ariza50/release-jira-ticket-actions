@@ -32,7 +32,7 @@ exports.RELEASE_NAME = core.getInput('release_name', {
     required: true
 });
 exports.RELEASE_PREFIX = core.getInput('release_prefix', {
-    required: false
+    required: true
 });
 exports.PROJECT = core.getInput('jira_project', { required: true });
 exports.GH_USER = core.getInput('gh_user', { required: true });

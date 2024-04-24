@@ -18,7 +18,7 @@ inputs:
     required: true
     description: Name of the release
   release_prefix:
-    required: false
+    required: true
     description: Prefix for release
   gh_user:
     required: true
