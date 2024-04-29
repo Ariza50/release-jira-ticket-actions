@@ -1,11 +1,13 @@
 import {WebClient} from '@slack/web-api';
-import {GH_REPOSITORY, RELEASE_PREFIX, SLACK_CHANNEL, SLACK_ENVIRONMENT, SLACK_TOKEN} from './env'
+import {DRY_RUN, RELEASE_PREFIX, SLACK_CHANNEL, SLACK_ENVIRONMENT, SLACK_TOKEN} from './env'
 
 export const sendNewReleaseMessage = async (version: string) => {
   try {
     const web = new WebClient(SLACK_TOKEN);
 
-    const message = buildSlackVersionMessage(version, SLACK_ENVIRONMENT);
+    const message = DRY_RUN === 'release' ?
+      buildSlackDeployVersionMessage(version, SLACK_ENVIRONMENT) :
+      buildSlackVersionMessage(version, SLACK_ENVIRONMENT)
 
     await web.chat.postMessage({
       token: SLACK_TOKEN,
@@ -27,7 +29,7 @@ const buildSlackVersionMessage = (version: string, environment: string) => {
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": `*${RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
+      "text": `*${RELEASE_PREFIX} | Release* version \`${version}\` has been created on \`${environment}\``
     }
   })
 
@@ -35,7 +37,23 @@ const buildSlackVersionMessage = (version: string, environment: string) => {
   blocks.push(buildFooter())
 
   return blocks;
+}
 
+const buildSlackDeployVersionMessage = (version: string, environment: string) => {
+  const blocks = []
+
+  blocks.push({
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": `*${RELEASE_PREFIX} | Release* version \`${version}\` has been deployed to \`${environment}\``
+    }
+  })
+
+  blocks.push(buildDivider())
+  blocks.push(buildFooter())
+
+  return blocks;
 }
 
 const buildDivider = () => {
