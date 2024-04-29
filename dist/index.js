@@ -145,17 +145,33 @@ async function testConnections() {
     }
 }
 async function run() {
-    var _a, _b;
+    var _a, _b, _c;
     try {
         if (env_1.DRY_RUN === 'true') {
             await testConnections();
             return;
         }
-        const tickets = await (0, github_api_1.getTicketsFromCommits)();
         const project = await jira_api_1.Project.create(env_1.EMAIL, env_1.API_TOKEN, env_1.PROJECT, env_1.SUBDOMAIN);
-        core.debug(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
         const versionName = `${env_1.RELEASE_PREFIX} - ${env_1.RELEASE_NAME}`;
         let version = project.getVersion(versionName);
+        if (env_1.DRY_RUN === 'release') {
+            core.debug(`Project loaded ${(_a = project.project) === null || _a === void 0 ? void 0 : _a.id}`);
+            if (version === undefined) {
+                core.debug(`Version ${versionName} not found`);
+                return;
+            }
+            const versionToUpdate = {
+                ...version,
+                self: undefined,
+                released: true,
+                releaseDate: new Date().toISOString(),
+                userReleaseDate: undefined
+            };
+            version = await project.updateVersion(versionToUpdate);
+            return;
+        }
+        const tickets = await (0, github_api_1.getTicketsFromCommits)();
+        core.debug(`Project loaded ${(_b = project.project) === null || _b === void 0 ? void 0 : _b.id}`);
         if (version === undefined) {
             core.debug(`Version ${versionName} not found`);
             core.debug(`Version ${versionName} is going to the created`);
@@ -164,7 +180,7 @@ async function run() {
                 archived: false,
                 released: false,
                 releaseDate: new Date().toISOString(),
-                projectId: Number((_b = project.project) === null || _b === void 0 ? void 0 : _b.id)
+                projectId: Number((_c = project.project) === null || _c === void 0 ? void 0 : _c.id)
             };
             version = await project.createVersion(versionToCreate);
             core.debug(versionToCreate.name);
@@ -356,7 +372,9 @@ const env_1 = __nccwpck_require__(761);
 const sendNewReleaseMessage = async (version) => {
     try {
         const web = new web_api_1.WebClient(env_1.SLACK_TOKEN);
-        const message = buildSlackVersionMessage(version, env_1.SLACK_ENVIRONMENT);
+        const message = env_1.DRY_RUN === 'release' ?
+            buildSlackDeployVersionMessage(version, env_1.SLACK_ENVIRONMENT) :
+            buildSlackVersionMessage(version, env_1.SLACK_ENVIRONMENT);
         await web.chat.postMessage({
             token: env_1.SLACK_TOKEN,
             channel: env_1.SLACK_CHANNEL,
@@ -376,7 +394,20 @@ const buildSlackVersionMessage = (version, environment) => {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been created on \`${environment}\``
+        }
+    });
+    blocks.push(buildDivider());
+    blocks.push(buildFooter());
+    return blocks;
+};
+const buildSlackDeployVersionMessage = (version, environment) => {
+    const blocks = [];
+    blocks.push({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been deployed to \`${environment}\``
         }
     });
     blocks.push(buildDivider());
