@@ -52,14 +52,33 @@ async function run(): Promise<void> {
       return;
     }
 
-    const tickets = await getTicketsFromCommits();
-
     const project = await Project.create(EMAIL, API_TOKEN, PROJECT, SUBDOMAIN)
-
-    core.debug(`Project loaded ${project.project?.id}`)
-
     const versionName = `${RELEASE_PREFIX} - ${RELEASE_NAME}`
     let version = project.getVersion(versionName)
+
+    if (DRY_RUN === 'release') {
+      core.debug(`Project loaded ${project.project?.id}`)
+
+      if (version === undefined) {
+        core.debug(`Version ${versionName} not found`)
+        return;
+      }
+
+      const versionToUpdate: Version = {
+        ...version,
+        self: undefined,
+        released: true,
+        releaseDate: new Date().toISOString(),
+        userReleaseDate: undefined
+      }
+      version = await project.updateVersion(versionToUpdate)
+
+      return;
+    }
+
+
+    const tickets = await getTicketsFromCommits();
+    core.debug(`Project loaded ${project.project?.id}`)
 
     if (version === undefined) {
       core.debug(`Version ${versionName} not found`)
