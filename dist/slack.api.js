@@ -6,7 +6,9 @@ const env_1 = require("./env");
 const sendNewReleaseMessage = async (version) => {
     try {
         const web = new web_api_1.WebClient(env_1.SLACK_TOKEN);
-        const message = buildSlackVersionMessage(version, env_1.SLACK_ENVIRONMENT);
+        const message = env_1.DRY_RUN === 'release' ?
+            buildSlackDeployVersionMessage(version, env_1.SLACK_ENVIRONMENT) :
+            buildSlackVersionMessage(version, env_1.SLACK_ENVIRONMENT);
         await web.chat.postMessage({
             token: env_1.SLACK_TOKEN,
             channel: env_1.SLACK_CHANNEL,
@@ -26,7 +28,20 @@ const buildSlackVersionMessage = (version, environment) => {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been released to \`${environment}\``
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been created on \`${environment}\``
+        }
+    });
+    blocks.push(buildDivider());
+    blocks.push(buildFooter());
+    return blocks;
+};
+const buildSlackDeployVersionMessage = (version, environment) => {
+    const blocks = [];
+    blocks.push({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": `*${env_1.RELEASE_PREFIX} | Release* version \`${version}\` has been deployed to \`${environment}\``
         }
     });
     blocks.push(buildDivider());
