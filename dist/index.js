@@ -168,6 +168,10 @@ async function run() {
                 userReleaseDate: undefined
             };
             version = await project.updateVersion(versionToUpdate);
+            if (env_1.SLACK_TOKEN && env_1.SLACK_CHANNEL) {
+                core.debug(`Sending slack message`);
+                await (0, slack_api_1.sendNewReleaseMessage)(env_1.RELEASE_NAME);
+            }
             return;
         }
         const tickets = await (0, github_api_1.getTicketsFromCommits)();
