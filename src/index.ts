@@ -73,6 +73,11 @@ async function run(): Promise<void> {
       }
       version = await project.updateVersion(versionToUpdate)
 
+      if (SLACK_TOKEN && SLACK_CHANNEL) {
+        core.debug(`Sending slack message`)
+        await sendNewReleaseMessage(RELEASE_NAME)
+      }
+
       return;
     }
 
